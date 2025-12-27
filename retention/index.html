@@ -57,13 +57,17 @@
         <option value="number">Dollar Amount</option>
     </select>
 
+    <!-- Retention Amount -->
+    <label for="retentionAmount">Retention Amount</label>
+    <input type="number" id="retentionAmount" placeholder="Percent or Dollar Amount">
+    
     <!-- Years -->
     <label for="years">Number of Years</label>
     <input type="number" id="years" min="1" placeholder="e.g. 3">
 
-    <!-- Retention Amount -->
-    <label for="retentionAmount">Retention Amount</label>
-    <input type="number" id="retentionAmount" placeholder="Percent or Dollar Amount">
+    <!-- Existing Retentions -->
+    <label for="existingRetentions">Current Number of Existing Retentions</label>
+    <input type="number" id="existingRetentions" min="0" max="3" placeholder="e.g. 1">
 
     <!-- Player 1 -->
     <label for="player1">Player 1 Data</label>
@@ -72,10 +76,6 @@
     <!-- Player 2 -->
     <label for="player2">Player 2 Data</label>
     <textarea id="player2" rows="6" placeholder="Paste Player 2 data here..."></textarea>
-
-    <!-- Existing Retentions -->
-    <label for="existingRetentions">Current Number of Retentions</label>
-    <input type="number" id="existingRetentions" min="0" max="3" placeholder="e.g. 1">
 
     <!-- Button -->
     <button onclick="calculateRetention()">Calculate</button>
