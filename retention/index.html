@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Retention Helper</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        label {
+            display: block;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+
+        select, input, textarea, button {
+            width: 100%;
+            margin-top: 8px;
+            padding: 8px;
+            font-size: 16px;
+        }
+
+        textarea {
+            resize: vertical;
+        }
+
+        button {
+            margin-top: 30px;
+            cursor: pointer;
+        }
+
+        #output {
+            margin-top: 30px;
+            padding: 15px;
+            border: 1px solid #ccc;
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Retention Helper</h1>
+
+    <!-- Retention Type -->
+    <label for="retentionType">Retention Input Type</label>
+    <select id="retentionType">
+        <option value="percent">Percent</option>
+        <option value="number">Dollar Amount</option>
+    </select>
+
+    <!-- Years -->
+    <label for="years">Number of Years</label>
+    <input type="number" id="years" min="1" placeholder="e.g. 3">
+
+    <!-- Retention Amount -->
+    <label for="retentionAmount">Retention Amount</label>
+    <input type="number" id="retentionAmount" placeholder="Percent or Dollar Amount">
+
+    <!-- Player 1 -->
+    <label for="player1">Player 1 Data</label>
+    <textarea id="player1" rows="6" placeholder="Paste Player 1 data here..."></textarea>
+
+    <!-- Player 2 -->
+    <label for="player2">Player 2 Data</label>
+    <textarea id="player2" rows="6" placeholder="Paste Player 2 data here..."></textarea>
+
+    <!-- Existing Retentions -->
+    <label for="existingRetentions">Current Number of Retentions</label>
+    <input type="number" id="existingRetentions" min="0" max="3" placeholder="e.g. 1">
+
+    <!-- Button -->
+    <button onclick="calculateRetention()">Calculate</button>
+
+    <!-- Output -->
+    <div id="output">
+        <strong>Result:</strong>
+        <div id="resultText">No calculation yet.</div>
+    </div>
+
+    <script>
+        function calculateRetention() {
+            const type = document.getElementById("retentionType").value;
+            const years = document.getElementById("years").value;
+            const amount = document.getElementById("retentionAmount").value;
+            const player1 = document.getElementById("player1").value.trim();
+            const player2 = document.getElementById("player2").value.trim();
+            const existing = document.getElementById("existingRetentions").value;
+
+            if (!years || !amount || !player1 || !player2) {
+                document.getElementById("resultText").innerText =
+                    "Please complete all fields.";
+                return;
+            }
+
+            // Placeholder logic
+            let message = `Retention Type: ${type}\n`;
+            message += `Years: ${years}\n`;
+            message += `Amount: ${amount}\n`;
+            message += `Existing Retentions: ${existing}\n`;
+            message += `Player 1 length: ${player1.length}\n`;
+            message += `Player 2 length: ${player2.length}`;
+
+            document.getElementById("resultText").innerText = message;
+        }
+    </script>
+
+</body>
+</html>
