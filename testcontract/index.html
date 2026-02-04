@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Contract Helper</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 700px;
+            margin: 60px auto;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        label {
+            display: block;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+
+        textarea, select, button {
+            width: 100%;
+            margin-top: 8px;
+            padding: 8px;
+            font-size: 16px;
+        }
+
+        #output {
+            margin-top: 30px;
+            padding: 15px;
+            border: 1px solid #ccc;
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Contract Helper</h1>
+
+<!-- Position Input -->
+<label for="position">Player Position</label>
+<select id="position">
+    <option value="forward">Forward</option>
+    <option value="defense">Defensemen</option>
+</select>
+
+<!-- ELC Input -->
+<label for="elc">Post ELC?</label>
+<select id="elc">
+    <option value="false">No, standard non-ELC signing</option>
+    <option value="true">Yes, player is coming off ELC</option>
+</select>
+
+<!-- Data Input -->
+<label for="data">Paste Player Data</label>
+<textarea id="data" rows="8" placeholder="Paste player stats here..."></textarea>
+
+<!-- Button -->
+<button onclick="calculateContract()">Calculate</button>
+
+<!-- Output -->
+<div id="output">
+    <strong>Result:</strong>
+    <div id="resultText">No calculation yet.</div>
+</div>
+
+<script>
+/* ===============================
+   CONSTANTS (from Python)
+================================ */
+const x_eight = 0.18;
+const cap = 95.5;
+
+const df = [
+  { off:99, offCap:0.21, def:99, defCap:0.2 },
+  { off:98, offCap:0.20, def:98, defCap:0.2 },
+  { off:97, offCap:0.19, def:97, defCap:0.2 },
+  { off:96, offCap:0.18, def:96, defCap:0.2 },
+  { off:95, offCap:0.17, def:95, defCap:0.2 },
+  { off:94, offCap:0.16, def:94, defCap:0.2 },
+  { off:93, offCap:0.15, def:93, defCap:0.19 },
+  { off:92, offCap:0.145, def:92, defCap:0.175 },
+  { off:91, offCap:0.14, def:91, defCap:0.16 },
+  { off:90, offCap:0.135, def:90, defCap:0.145 },
+  { off:89, offCap:0.12, def:89, defCap:0.13 },
+  { off:88, offCap:0.105, def:88, defCap:0.115 },
+  { off:87, offCap:0.09, def:87, defCap:0.1 },
+  { off:86, offCap:0.08, def:86, defCap:0.085 },
+  { off:85, offCap:0.07, def:85, defCap:0.07 },
+  { off:84, offCap:0.06, def:84, defCap:0.055 },
+  { off:83, offCap:0.04, def:83, defCap:0.04 },
+  { off:82, offCap:0.032, def:82, defCap:0.028 },
+  { off:81, offCap:0.024, def:81, defCap:0.018 },
+  { off:80, offCap:0.016, def:80, defCap:0.014 },
+  { off:79, offCap:0.013, def:79, defCap:0.012 },
+  { off:78, offCap:0.012, def:78, defCap:0.011 },
+  { off:77, offCap:0.011, def:77, defCap:0.01 },
+  { off:76, offCap:0.01, def:76, defCap:0.009 }
+];
+
+/* OA Table */
+const oaDf = [
+  { oa:99, oaCap:0.109947644 },
+  { oa:98, oaCap:0.109947644 },
+  { oa:97, oaCap:0.109947644 },
+  { oa:96, oaCap:0.109947644 },
+  { oa:95, oaCap:0.109947644 },
+  { oa:94, oaCap:0.109947644 },
+  { oa:93, oaCap:0.109947644 },
+  { oa:92, oaCap:0.09947643979 },
+  { oa:91, oaCap:0.09947643979 },
+  { oa:90, oaCap:0.0890052356 },
+  { oa:89, oaCap:0.0890052356 },
+  { oa:88, oaCap:0.07853403141 },
+  { oa:87, oaCap:0.06806282723 },
+  { oa:86, oaCap:0.05759162304 },
+  { oa:85, oaCap:0.04712041885 },
+  { oa:84, oaCap:0.03664921466 },
+  { oa:83, oaCap:0.02617801047 },
+  { oa:82, oaCap:0.02094240838 },
+  { oa:81, oaCap:0.01570680628 },
+  { oa:80, oaCap:0.01 },
+  { oa:79, oaCap:0.008 },
+  { oa:78, oaCap:0.006 },
+  { oa:77, oaCap:0.004 },
+  { oa:76, oaCap:0.002 }
+];
+
+/* ===============================
+   PARSER
+================================ */
+function parse(info) {
+  const parts = info.trim().split(/\s+/);
+  const name = `${parts[0]} ${parts[1]}`;
+
+  let age = null;
+  for (const p of parts) {
+    if (/^\d+$/.test(p)) {
+      age = parseInt(p, 10);
+      break;
+    }
+  }
+
+  const nums = parts.filter(p => /^\d+$/.test(p)).map(Number);
+
+  return {
+    name,
+    age,
+    off: nums[nums.length - 3],
+    def: nums[nums.length - 2],
+    oa: nums[nums.length - 1]
+  };
+}
+
+/* ===============================
+   FORWARD CONTRACT
+================================ */
+function fcontractJS(playerText, elc) {
+  const data = parse(playerText);
+  const { name, age, off, def: pdef, oa } = data;
+
+  const tw = ((off > 85 && pdef > 80) || (off > 82 && pdef > 82)) ? 1 : 0;
+  const twoway = pdef < 80 ? tw * 1.025 : tw * 1.05;
+
+  const scg = ((off < 65 && pdef > 76) || (off < 60 && pdef > 74)) ? 1 : 0;
+  const gnval = (pdef > 77 ? 0.85 : 0.55) * scg;
+
+  const elcbonus = elc ? 0.9 : 1;
+  const oneway = (off > 79 && pdef < 67) ? 0.85 : 1;
+
+  let allo = 1;
+  if (off > 92) allo = 1.3;
+  else if (off > 86) allo = 1.2;
+  else if (off > 82) allo = 1.1;
+
+  const offVal = df.find(r => r.off === off)?.offCap || 0;
+  const defVal = df.find(r => r.def === pdef)?.defCap || 0;
+  const oaVal  = oaDf.find(r => r.oa === oa)?.oaCap || 0;
+
+  const sumAllo = (offVal * allo) + defVal + oaVal;
+
+  let sugval;
+  if (off < 78 && pdef < 70) {
+    sugval = 0.8 / 82.5;
+  } else if (twoway > 0) {
+    sugval = gnval > 0 ? twoway * gnval * (sumAllo / 2) : twoway * (sumAllo / 2);
+  } else {
+    sugval = gnval > 0 ? gnval * (sumAllo / 2) : sumAllo / 2;
+  }
+
+  sugval = Math.min(sugval * oneway * elcbonus, 0.8);
+
+  let aav = Math.min(sugval * cap, x_eight * cap);
+  if (age > 34) aav *= 0.9;
+
+  return { name, age, off, pdef, oa, elc, aav };
+}
+
+/* ===============================
+   DEFENSE PLACEHOLDER
+================================ */
+function dcontractJS() {
+  return { error: "Defense contract logic not implemented yet." };
+}
+
+/* ===============================
+   MAIN BUTTON HANDLER
+================================ */
+function calculateContract() {
+  const position = document.getElementById("position").value;
+  const elc = document.getElementById("elc").value === "true";
+  const rawText = document.getElementById("data").value.trim();
+
+  if (!rawText) {
+    document.getElementById("resultText").innerText = "Please paste player data.";
+    return;
+  }
+
+  let result;
+  if (position === "forward") {
+    result = fcontractJS(rawText, elc);
+  } else {
+    result = dcontractJS();
+  }
+
+  if (result.error) {
+    document.getElementById("resultText").innerText = result.error;
+    return;
+  }
+
+  document.getElementById("resultText").innerHTML = `
+    <b>Summary</b><br>
+    Player: ${result.name}<br>
+    AAV: <b>$${(result.aav * 1_000_000).toLocaleString()}</b><br><br>
+
+    <b>Breakdown</b><br>
+    Offense: ${result.off}<br>
+    Defense: ${result.pdef}<br>
+    Overall: ${result.oa}<br>
+    Age: ${result.age}<br>
+    ELC: ${result.elc}<br>
+    AAV (cap %): ${result.aav.toFixed(6)}<br>
+    ${result.elc ? "<i>Max contract length 2–3 years</i>" : ""}
+  `;
+}
+</script>
+
+</body>
+</html>
