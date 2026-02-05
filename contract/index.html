@@ -75,59 +75,38 @@ const x_eight = 0.18;
 const cap = 95.5;
 
 const df = [
-  { off:99, offCap:0.21, def:99, defCap:0.2 },
-  { off:98, offCap:0.20, def:98, defCap:0.2 },
-  { off:97, offCap:0.19, def:97, defCap:0.2 },
-  { off:96, offCap:0.18, def:96, defCap:0.2 },
-  { off:95, offCap:0.17, def:95, defCap:0.2 },
-  { off:94, offCap:0.16, def:94, defCap:0.2 },
-  { off:93, offCap:0.15, def:93, defCap:0.19 },
-  { off:92, offCap:0.145, def:92, defCap:0.175 },
-  { off:91, offCap:0.14, def:91, defCap:0.16 },
-  { off:90, offCap:0.135, def:90, defCap:0.145 },
-  { off:89, offCap:0.12, def:89, defCap:0.13 },
-  { off:88, offCap:0.105, def:88, defCap:0.115 },
-  { off:87, offCap:0.09, def:87, defCap:0.1 },
-  { off:86, offCap:0.08, def:86, defCap:0.085 },
-  { off:85, offCap:0.07, def:85, defCap:0.07 },
-  { off:84, offCap:0.06, def:84, defCap:0.055 },
-  { off:83, offCap:0.04, def:83, defCap:0.04 },
-  { off:82, offCap:0.032, def:82, defCap:0.028 },
-  { off:81, offCap:0.024, def:81, defCap:0.018 },
-  { off:80, offCap:0.016, def:80, defCap:0.014 },
-  { off:79, offCap:0.013, def:79, defCap:0.012 },
-  { off:78, offCap:0.012, def:78, defCap:0.011 },
-  { off:77, offCap:0.011, def:77, defCap:0.01 },
-  { off:76, offCap:0.01, def:76, defCap:0.009 }
+  { OFF_Rating: 99, OFF_CapValue: 0.21, DEF_Rating: 99, DEF_CapValue: 0.2, OA_Rating: 99, OA_CapValue: 0.109947644 },
+  { OFF_Rating: 98, OFF_CapValue: 0.2,  DEF_Rating: 98, DEF_CapValue: 0.2, OA_Rating: 98, OA_CapValue: 0.109947644 },
+  { OFF_Rating: 97, OFF_CapValue: 0.19, DEF_Rating: 97, DEF_CapValue: 0.2, OA_Rating: 97, OA_CapValue: 0.109947644 },
+  { OFF_Rating: 96, OFF_CapValue: 0.18, DEF_Rating: 96, DEF_CapValue: 0.2, OA_Rating: 96, OA_CapValue: 0.109947644 },
+  { OFF_Rating: 95, OFF_CapValue: 0.17, DEF_Rating: 95, DEF_CapValue: 0.2, OA_Rating: 95, OA_CapValue: 0.109947644 },
+  { OFF_Rating: 94, OFF_CapValue: 0.16, DEF_Rating: 94, DEF_CapValue: 0.2, OA_Rating: 94, OA_CapValue: 0.109947644 },
+  { OFF_Rating: 93, OFF_CapValue: 0.15, DEF_Rating: 93, DEF_CapValue: 0.19, OA_Rating: 93, OA_CapValue: 0.109947644 },
+  { OFF_Rating: 92, OFF_CapValue: 0.145, DEF_Rating: 92, DEF_CapValue: 0.175, OA_Rating: 92, OA_CapValue: 0.09947643979 },
+  { OFF_Rating: 91, OFF_CapValue: 0.14, DEF_Rating: 91, DEF_CapValue: 0.16, OA_Rating: 91, OA_CapValue: 0.09947643979 },
+  { OFF_Rating: 90, OFF_CapValue: 0.135, DEF_Rating: 90, DEF_CapValue: 0.145, OA_Rating: 90, OA_CapValue: 0.0890052356 },
+  { OFF_Rating: 89, OFF_CapValue: 0.12, DEF_Rating: 89, DEF_CapValue: 0.13, OA_Rating: 89, OA_CapValue: 0.0890052356 },
+  { OFF_Rating: 88, OFF_CapValue: 0.105, DEF_Rating: 88, DEF_CapValue: 0.115, OA_Rating: 88, OA_CapValue: 0.07853403141 },
+  { OFF_Rating: 87, OFF_CapValue: 0.09, DEF_Rating: 87, DEF_CapValue: 0.1, OA_Rating: 87, OA_CapValue: 0.06806282723 },
+  { OFF_Rating: 86, OFF_CapValue: 0.08, DEF_Rating: 86, DEF_CapValue: 0.085, OA_Rating: 86, OA_CapValue: 0.05759162304 },
+  { OFF_Rating: 85, OFF_CapValue: 0.07, DEF_Rating: 85, DEF_CapValue: 0.07, OA_Rating: 85, OA_CapValue: 0.04712041885 },
+  { OFF_Rating: 84, OFF_CapValue: 0.06, DEF_Rating: 84, DEF_CapValue: 0.055, OA_Rating: 84, OA_CapValue: 0.03664921466 },
+  { OFF_Rating: 83, OFF_CapValue: 0.04, DEF_Rating: 83, DEF_CapValue: 0.04, OA_Rating: 83, OA_CapValue: 0.02617801047 },
+  { OFF_Rating: 82, OFF_CapValue: 0.032, DEF_Rating: 82, DEF_CapValue: 0.028, OA_Rating: 82, OA_CapValue: 0.02094240838 },
+  { OFF_Rating: 81, OFF_CapValue: 0.024, DEF_Rating: 81, DEF_CapValue: 0.018, OA_Rating: 81, OA_CapValue: 0.01570680628 },
+  { OFF_Rating: 80, OFF_CapValue: 0.016, DEF_Rating: 80, DEF_CapValue: 0.014, OA_Rating: 80, OA_CapValue: 0.01 },
+  { OFF_Rating: 79, OFF_CapValue: 0.013, DEF_Rating: 79, DEF_CapValue: 0.012, OA_Rating: 79, OA_CapValue: 0.008 },
+  { OFF_Rating: 78, OFF_CapValue: 0.012, DEF_Rating: 78, DEF_CapValue: 0.011, OA_Rating: 78, OA_CapValue: 0.006 },
+  { OFF_Rating: 77, OFF_CapValue: 0.011, DEF_Rating: 77, DEF_CapValue: 0.01, OA_Rating: 77, OA_CapValue: 0.004 },
+  { OFF_Rating: 76, OFF_CapValue: 0.01, DEF_Rating: 76, DEF_CapValue: 0.009, OA_Rating: 76, OA_CapValue: 0.002 },
+  { OFF_Rating: 75, OFF_CapValue: 0.0085, DEF_Rating: 75, DEF_CapValue: 0.005454545455, OA_Rating: 75, OA_CapValue: 0 },
+  { OFF_Rating: 74, OFF_CapValue: 0.0085, DEF_Rating: 74, DEF_CapValue: 0.005454545455, OA_Rating: 74, OA_CapValue: -0.001047120419 },
+  { OFF_Rating: 73, OFF_CapValue: 0.0085, DEF_Rating: 73, DEF_CapValue: 0.005454545455, OA_Rating: 73, OA_CapValue: -0.002094240838 },
+  { OFF_Rating: 72, OFF_CapValue: 0.0085, DEF_Rating: 72, DEF_CapValue: 0.005454545455, OA_Rating: 72, OA_CapValue: -0.003141361257 },
+  { OFF_Rating: 71, OFF_CapValue: 0.0085, DEF_Rating: 71, DEF_CapValue: 0.005454545455, OA_Rating: 71, OA_CapValue: -0.004188481675 },
+  { OFF_Rating: 70, OFF_CapValue: 0.0085, DEF_Rating: 70, DEF_CapValue: 0.005454545455, OA_Rating: 70, OA_CapValue: -0.005235602094 }
 ];
 
-/* OA Table */
-const oaDf = [
-  { oa:99, oaCap:0.109947644 },
-  { oa:98, oaCap:0.109947644 },
-  { oa:97, oaCap:0.109947644 },
-  { oa:96, oaCap:0.109947644 },
-  { oa:95, oaCap:0.109947644 },
-  { oa:94, oaCap:0.109947644 },
-  { oa:93, oaCap:0.109947644 },
-  { oa:92, oaCap:0.09947643979 },
-  { oa:91, oaCap:0.09947643979 },
-  { oa:90, oaCap:0.0890052356 },
-  { oa:89, oaCap:0.0890052356 },
-  { oa:88, oaCap:0.07853403141 },
-  { oa:87, oaCap:0.06806282723 },
-  { oa:86, oaCap:0.05759162304 },
-  { oa:85, oaCap:0.04712041885 },
-  { oa:84, oaCap:0.03664921466 },
-  { oa:83, oaCap:0.02617801047 },
-  { oa:82, oaCap:0.02094240838 },
-  { oa:81, oaCap:0.01570680628 },
-  { oa:80, oaCap:0.01 },
-  { oa:79, oaCap:0.008 },
-  { oa:78, oaCap:0.006 },
-  { oa:77, oaCap:0.004 },
-  { oa:76, oaCap:0.002 }
-];
 
 const ddf = [
   { OFF_Rating: 99, OFF_Value: 0, OFF_CapValue: 0.2, DEF_Rating: 99, DEF_Value: 0, DEF_CapValue: 0.2, OA_Rating: 99, OA_Value: 9.5, OA_CapValue: 0.2 },
@@ -225,9 +204,9 @@ function fcontractJS(playerText, elc) {
   else if (off > 86) allo = 1.2;
   else if (off > 82) allo = 1.1;
 
-  const offVal = df.find(r => r.off === off)?.offCap || 0;
-  const defVal = df.find(r => r.def === pdef)?.defCap || 0;
-  const oaVal  = oaDf.find(r => r.oa === oa)?.oaCap || 0;
+  const offVal = df.find(r => r.OFF_Rating === off)?.OFF_CapValue || 0;
+  const defVal = df.find(r => r.DEF_Rating === pdef)?.DEF_CapValue || 0;
+  const oaVal  = df.find(r => r.OA_Rating === oa)?.OA_CapValue || 0;
 
   const sumAllo = (offVal * allo) + defVal + oaVal;
 
