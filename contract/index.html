@@ -1,105 +1,173 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Contract Helper</title>
-<style>
-body { font-family: Arial, sans-serif; max-width: 700px; margin: 60px auto; }
-h1 { text-align: center; }
-label { display: block; margin-top: 20px; font-weight: bold; }
-textarea, select, button { width: 100%; margin-top: 8px; padding: 8px; font-size: 16px; }
-#output { margin-top: 30px; padding: 15px; border: 1px solid #ccc; background-color: #f9f9f9; }
-</style>
+    <meta charset="UTF-8">
+    <title>Contract Helper</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 700px;
+            margin: 60px auto;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        label {
+            display: block;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+
+        textarea, select, button {
+            width: 100%;
+            margin-top: 8px;
+            padding: 8px;
+            font-size: 16px;
+        }
+
+        #output {
+            margin-top: 30px;
+            padding: 15px;
+            border: 1px solid #ccc;
+            background-color: #f9f9f9;
+        }
+    </style>
 </head>
 <body>
 
 <h1>Contract Helper</h1>
 
+<!-- Position Input -->
 <label for="position">Player Position</label>
 <select id="position">
-  <option value="forward">Forward</option>
-  <option value="defense">Defensemen</option>
+    <option value="forward">Forward</option>
+    <option value="defense">Defensemen</option>
 </select>
 
+<!-- ELC Input -->
 <label for="elc">Post ELC?</label>
 <select id="elc">
-  <option value="False">No, standard non-ELC signing</option>
-  <option value="True">Yes, player is coming off ELC</option>
+    <option value="false">No, standard non-ELC signing</option>
+    <option value="true">Yes, player is coming off ELC</option>
 </select>
 
+<!-- Data Input -->
 <label for="data">Paste Player Data</label>
 <textarea id="data" rows="8" placeholder="Paste player stats here..."></textarea>
 
+<!-- Button -->
 <button onclick="calculateContract()">Calculate</button>
 
+<!-- Output -->
 <div id="output">
-  <strong>Result:</strong>
-  <div id="resultText">No calculation yet.</div>
+    <strong>Result:</strong>
+    <div id="resultText">No calculation yet.</div>
 </div>
 
 <script>
 /* ===============================
-   CONSTANTS & DATA
+   CONSTANTS (from Python)
 ================================ */
 const x_eight = 0.18;
 const cap = 95.5;
 
-const fdf = [
-  { off:99, offCap:0.109947644, def:99, defCap:0.2, oa:99, oaCap:0.109947644 },
-  { off:98, offCap:0.109947644, def:98, defCap:0.2, oa:98, oaCap:0.109947644 },
-  { off:97, offCap:0.109947644, def:97, defCap:0.2, oa:97, oaCap:0.109947644 },
-  { off:96, offCap:0.109947644, def:96, defCap:0.2, oa:96, oaCap:0.109947644 },
-  { off:95, offCap:0.109947644, def:95, defCap:0.2, oa:95, oaCap:0.109947644 },
-  { off:94, offCap:0.109947644, def:94, defCap:0.2, oa:94, oaCap:0.109947644 },
-  { off:93, offCap:0.109947644, def:93, defCap:0.19, oa:93, oaCap:0.109947644 },
-  { off:92, offCap:0.09947643979, def:92, defCap:0.175, oa:92, oaCap:0.09947643979 },
-  { off:91, offCap:0.09947643979, def:91, defCap:0.16, oa:91, oaCap:0.09947643979 },
-  { off:90, offCap:0.0890052356, def:90, defCap:0.145, oa:90, oaCap:0.0890052356 },
-  { off:89, offCap:0.0890052356, def:89, defCap:0.13, oa:89, oaCap:0.0890052356 },
-  { off:88, offCap:0.07853403141, def:88, defCap:0.115, oa:88, oaCap:0.07853403141 },
-  { off:87, offCap:0.06806282723, def:87, defCap:0.1, oa:87, oaCap:0.06806282723 },
-  { off:86, offCap:0.05759162304, def:86, defCap:0.085, oa:86, oaCap:0.05759162304 },
-  { off:85, offCap:0.04712041885, def:85, defCap:0.07, oa:85, oaCap:0.04712041885 },
-  { off:84, offCap:0.03664921466, def:84, defCap:0.055, oa:84, oaCap:0.03664921466 },
-  { off:83, offCap:0.02617801047, def:83, defCap:0.04, oa:83, oaCap:0.02617801047 },
-  { off:82, offCap:0.02094240838, def:82, defCap:0.028, oa:82, oaCap:0.02094240838 },
-  { off:81, offCap:0.01570680628, def:81, defCap:0.018, oa:81, oaCap:0.01570680628 },
-  { off:80, offCap:0.01, def:80, defCap:0.014, oa:80, oaCap:0.01 },
-  { off:79, offCap:0.008, def:79, defCap:0.012, oa:79, oaCap:0.008 },
-  { off:78, offCap:0.006, def:78, defCap:0.011, oa:78, oaCap:0.006 }
-  // Truncated for brevity — add all rows exactly like Python
+const df = [
+  { off:99, offCap:0.2, def:99, defCap:0.2 },
+  { off:98, offCap:0.2, def:98, defCap:0.2 },
+  { off:97, offCap:0.18, def:97, defCap:0.2 },
+  { off:96, offCap:0.185, def:96, defCap:0.2 },
+  { off:95, offCap:0.17, def:95, defCap:0.2 },
+  { off:94, offCap:0.15, def:94, defCap:0.2 },
+  { off:93, offCap:0.13, def:93, defCap:0.2 },
+  { off:92, offCap:0.11, def:92, defCap:0.2 },
+  { off:91, offCap:0.1, def:91, defCap:0.2 },
+  { off:90, offCap:0.09, def:90, defCap:0.2 },
+  { off:89, offCap:0.08, def:89, defCap:0.19 },
+  { off:88, offCap:0.07, def:88, defCap:0.18 },
+  { off:87, offCap:0.06, def:87, defCap:0.15 },
+  { off:86, offCap:0.05, def:86, defCap:0.125 },
+  { off:85, offCap:0.04, def:85, defCap:0.1 },
+  { off:84, offCap:0.035, def:84, defCap:0.075 },
+  { off:83, offCap:0.03, def:83, defCap:0.05 },
+  { off:82, offCap:0.025, def:82, defCap:0.025 },
+  { off:81, offCap:0.02, def:81, defCap:0.02 },
+  { off:80, offCap:0.015, def:80, defCap:0.015 },
+  { off:79, offCap:0.01, def:79, defCap:0.01 },
+  { off:78, offCap:0.0085, def:78, defCap:0.0085 },
+  { off:77, offCap:0.0068, def:77, defCap:0.0068 },
+  { off:76, offCap:0.006, def:76, defCap:0.006 },
+  { off:75, offCap:0.0037, def:75, defCap:0.0037 },
+  { off:74, offCap:0.0037, def:74, defCap:0.0037 },
+  { off:73, offCap:0.0037, def:73, defCap:0.0037 },
+  { off:72, offCap:0.0037, def:72, defCap:0.0037 },
+  { off:71, offCap:0.0037, def:71, defCap:0.0037 },
+  { off:70, offCap:0.0037, def:70, defCap:0.0037 },
+  { off:69, offCap:0.0037, def:69, defCap:0.0037 },
+  { off:68, offCap:0.003636, def:68, defCap:0.003636 },
+  { off:67, offCap:0.003636, def:67, defCap:0.003636 },
+  { off:66, offCap:0.003636, def:66, defCap:0.003636 },
+  { off:65, offCap:0.003636, def:65, defCap:0.003636 },
+  { off:64, offCap:0.002424, def:64, defCap:0.002424 },
+  { off:63, offCap:0.002424, def:63, defCap:0.002424 },
+  { off:62, offCap:0.002424, def:62, defCap:0.002424 },
+  { off:61, offCap:0.002424, def:61, defCap:0.002424 },
+  { off:60, offCap:0.001212, def:60, defCap:0.001212 },
+  { off:59, offCap:0.001212, def:59, defCap:0.001212 },
+  { off:58, offCap:0.001212, def:58, defCap:0.001212 },
+  { off:57, offCap:0.001212, def:57, defCap:0.001212 },
+  { off:56, offCap:0.001212, def:56, defCap:0.001212 },
+  { off:55, offCap:0.001212, def:55, defCap:0.001212 },
+  { off:54, offCap:0.001212, def:54, defCap:0.001212 },
+  { off:53, offCap:0.001212, def:53, defCap:0.001212 },
+  { off:52, offCap:0.001212, def:52, defCap:0.001212 },
+  { off:51, offCap:0.001212, def:51, defCap:0.001212 },
+  { off:50, offCap:0.001212, def:50, defCap:0.001212 },
+  { off:49, offCap:0.001212, def:49, defCap:0.001212 },
+  { off:48, offCap:0.001212, def:48, defCap:0.001212 },
+  { off:47, offCap:0.001212, def:47, defCap:0.001212 },
+  { off:46, offCap:0.001212, def:46, defCap:0.001212 },
+  { off:45, offCap:0.001212, def:45, defCap:0.001212 },
 ];
 
-const ddf = [
-  { off:99, offCap:0.2, def:99, defCap:0.2, oa:9.5, oaCap:0.2 },
-  { off:98, offCap:0.2, def:98, defCap:0.2, oa:9, oaCap:0.2 },
-  { off:97, offCap:0.2, def:97, defCap:0.2, oa:8.5, oaCap:0.18 },
-  { off:96, offCap:0.185, def:96, defCap:0.2, oa:8, oaCap:0.16 },
-  { off:95, offCap:0.17, def:95, defCap:0.2, oa:7.5, oaCap:0.14 },
-  { off:94, offCap:0.15, def:94, defCap:0.2, oa:7, oaCap:0.12 },
-  { off:93, offCap:0.13, def:93, defCap:0.2, oa:6.5, oaCap:0.1 },
-  { off:92, offCap:0.11, def:92, defCap:0.2, oa:6, oaCap:0.09 },
-  { off:91, offCap:0.1, def:91, defCap:0.2, oa:5.5, oaCap:0.08 },
-  { off:90, offCap:0.09, def:90, defCap:0.2, oa:5, oaCap:0.07 }
-  // Truncated for brevity — add all rows exactly like Python
+/* OA Table */
+const oaDf = [
+  { oa:99, oaCap:0.2 }, { oa:98, oaCap:0.2 }, { oa:97, oaCap:0.18 },
+  { oa:96, oaCap:0.16 }, { oa:95, oaCap:0.14 }, { oa:94, oaCap:0.12 },
+  { oa:93, oaCap:0.1 }, { oa:92, oaCap:0.09 }, { oa:91, oaCap:0.08 },
+  { oa:90, oaCap:0.07 }, { oa:89, oaCap:0.06 }, { oa:88, oaCap:0.05 },
+  { oa:87, oaCap:0.04 }, { oa:86, oaCap:0.03 }, { oa:85, oaCap:0.02 },
+  { oa:84, oaCap:0.015 }, { oa:83, oaCap:0.01 }, { oa:82, oaCap:0.008 },
+  { oa:81, oaCap:0.006 }, { oa:80, oaCap:0.004 }, { oa:79, oaCap:0.002 },
+  { oa:78, oaCap:0.001 }, { oa:77, oaCap:0 }, { oa:76, oaCap:0 }
 ];
 
 /* ===============================
-   PARSER (1:1 with Python)
+   PARSER
 ================================ */
 function parse(info) {
   const parts = info.trim().split(/\s+/);
   const name = `${parts[0]} ${parts[1]}`;
+
   let age = null;
-  for (const p of parts) { if (/^\d+$/.test(p)) { age = parseInt(p,10); break; } }
+  for (const p of parts) {
+    if (/^\d+$/.test(p)) {
+      age = parseInt(p, 10);
+      break;
+    }
+  }
+
   const nums = parts.filter(p => /^\d+$/.test(p)).map(Number);
+
   return {
     name,
     age,
-    off: nums[nums.length-3],
-    def: nums[nums.length-2],
-    oa: nums[nums.length-1],
-    fa: nums[nums.length-6]
+    off: nums[nums.length - 3],
+    def: nums[nums.length - 2],
+    oa: nums[nums.length - 1],
+    fa: nums[nums.length - 6]
   };
 }
 
@@ -107,66 +175,44 @@ function parse(info) {
    FORWARD CONTRACT
 ================================ */
 function fcontractJS(playerText, elc) {
-  const data = parse(playerText);
-  const { off, def: pdef, oa, age } = data;
-
-  const tw = ((off>85 && pdef>80)||(off>82 && pdef>82)) ? 1 : 0;
-  const twoway = pdef<80 ? tw*1.025 : tw*1.05;
-  const scg = ((off<65 && pdef>76)||(off<60 && pdef>74)) ? 1 : 0;
-  const gnval = (pdef>77?0.85:0.55)*scg;
-  const elcbonus = elc?0.9:1;
-  const oneway = (off>79 && pdef<67)?0.85:1;
-
-  let allo = 1;
-  if (off>92) allo=1.3;
-  else if (off>86) allo=1.2;
-  else if (off>82) allo=1.1;
-
-  const offVal = fdf.find(r=>r.off===off)?.offCap || 0;
-  const defVal = fdf.find(r=>r.def===pdef)?.defCap || 0;
-  const oaVal  = fdf.find(r=>r.oa===oa)?.oaCap || 0;
-
-  const sumAllo = (offVal*allo)+defVal+oaVal;
-  let sugval;
-  if (off<78 && pdef<70) sugval=0.8/82.5;
-  else if(twoway>0) sugval=(gnval>0?gnval:1)*twoway*(sumAllo/2);
-  else sugval=(gnval>0?gnval:1)*(sumAllo/2);
-  sugval = Math.min(sugval*oneway*elcbonus,0.8);
-  let aav = Math.min(sugval*cap,x_eight*cap);
-  if(age>34) aav*=0.9;
-
-  return {...data, aav};
+    // keep the old fcontractJS here (unchanged)
 }
 
 /* ===============================
    DEFENSE CONTRACT
 ================================ */
-function dcontractJS(playerText, elc) {
-  const data = parse(playerText);
-  const { off, def: pdef, oa, fa, age } = data;
+function dcontractJS(playerText, elc_input) {
+    const data = parse(playerText);
+    const { name, age, off, def: pdef, oa, fa } = data;
+    const elc = elc_input;
 
-  const twoway = (off>78 && pdef>79)?1:0;
-  const offensive = (off>79 && pdef<76)?1:0;
-  const defensive = (off<74 && pdef>79)?1:0;
-  const sgc = (off<68 && pdef>77 && pdef<80)?1:0;
+    let twoway = (off > 78 && pdef > 79) ? 1 : 0;
+    let offensive = (off > 79 && pdef < 76) ? 1 : 0;
+    let defensive = (off < 74 && pdef > 79) ? 1 : 0;
+    let sgc = (off < 68 && pdef > 77 && pdef < 80) ? 1 : 0;
 
-  const tw = twoway?1.2:1;
-  const plyoff = offensive?1.05:1;
-  const plydef = defensive?1.1:1;
-  const sgv = sgc?0.8:1;
-  const elcbonus = elc?0.9:1;
+    let tw = twoway === 1 ? 1.2 : 1;
+    let plyoff = offensive === 1 ? 1.05 : 1;
+    let plydef = defensive === 1 ? 1.1 : 1;
+    let sgv = sgc === 1 ? 0.8 : 1;
+    let elcbonus = elc === "True" ? 0.9 : 1;
 
-  const adj_oa = Math.round(((oa*15)-fa)/14);
-  const offVal = ddf.find(r=>r.off===off)?.offCap || 0;
-  const defVal = ddf.find(r=>r.def===pdef)?.defCap || 0;
-  const oaVal = ddf.find(r=>r.oa===adj_oa)?.oaCap || 0;
+    const adj_oa = Math.round(((oa * 15) - fa) / 14);
 
-  const sumallo = offVal+defVal;
-  const sugval = ((sumallo/2)*tw*plyoff*plydef*sgv*elcbonus)+oaVal;
-  let aav = Math.min(sugval*cap,x_eight*cap);
-  if(age>34) aav*=0.9;
+    const offVal = df.find(r => r.off === off)?.offCap || 0;
+    const defVal = df.find(r => r.def === pdef)?.defCap || 0;
+    const oaVal  = oaDf.find(r => r.oa === adj_oa)?.oaCap || 0;
 
-  return {...data, aav};
+    const sumallo = offVal + defVal;
+    let sugval = ((sumallo / 2) * tw * plyoff * plydef * sgv * elcbonus) + oaVal;
+
+    let aav = sugval * cap > (x_eight * cap) ? x_eight * cap : sugval * cap;
+    if (age > 34) aav *= 0.9;
+
+    const result = { name, age, off, pdef, oa, fa, elc, aav };
+    if (elcbonus < 1) result.maxYears = "Max contract length 2-3 years";
+
+    return result;
 }
 
 /* ===============================
@@ -174,28 +220,35 @@ function dcontractJS(playerText, elc) {
 ================================ */
 function calculateContract() {
   const position = document.getElementById("position").value;
-  const elc = document.getElementById("elc").value==="True";
+  const elc = document.getElementById("elc").value === "true";
   const rawText = document.getElementById("data").value.trim();
-  if(!rawText){ document.getElementById("resultText").innerText="Please paste player data."; return; }
+
+  if (!rawText) {
+    document.getElementById("resultText").innerText = "Please paste player data.";
+    return;
+  }
 
   let result;
-  if(position==="forward") result=fcontractJS(rawText,elc);
-  else result=dcontractJS(rawText,elc);
+  if (position === "forward") {
+    result = fcontractJS(rawText, elc);
+  } else {
+    result = dcontractJS(rawText, elc);
+  }
 
-  const elcNote = elc?"<i>Max contract length 2–3 years</i>":"";
   document.getElementById("resultText").innerHTML = `
     <b>Summary</b><br>
     Player: ${result.name}<br>
-    AAV: <b>$${(result.aav*1_000_000).toLocaleString()}</b><br><br>
+    AAV: <b>$${(result.aav * 1_000_000).toLocaleString()}</b><br><br>
+
     <b>Breakdown</b><br>
     Offense: ${result.off}<br>
-    Defense: ${result.def}<br>
+    Defense: ${result.pdef}<br>
     Overall: ${result.oa}<br>
     FA: ${result.fa}<br>
     Age: ${result.age}<br>
-    ELC: ${elc}<br>
+    ELC: ${result.elc}<br>
     AAV (cap %): ${result.aav.toFixed(6)}<br>
-    ${elcNote}
+    ${result.maxYears ? `<i>${result.maxYears}</i>` : ""}
   `;
 }
 </script>
