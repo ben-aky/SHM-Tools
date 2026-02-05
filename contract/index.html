@@ -16,14 +16,14 @@ textarea, select, button { width:100%; margin-top:8px; padding:8px; font-size:16
 
 <label for="position">Player Position</label>
 <select id="position">
-<option value="forward">Forward</option>
-<option value="defense">Defensemen</option>
+<option value="FWD">Forward</option>
+<option value="DEF">Defensemen</option>
 </select>
 
 <label for="elc">Post ELC?</label>
 <select id="elc">
-<option value="false">No, standard non-ELC signing</option>
-<option value="true">Yes, player is coming off ELC</option>
+<option value="False">No, standard non-ELC signing</option>
+<option value="True">Yes, player is coming off ELC</option>
 </select>
 
 <label for="data">Paste Player Data</label>
@@ -37,57 +37,54 @@ textarea, select, button { width:100%; margin-top:8px; padding:8px; font-size:16
 </div>
 
 <script>
-/* CONSTANTS */
-const x_eight=0.18, cap=95.5;
+/* ===============================
+   CONSTANTS
+================================ */
+const x_eight = 0.18;
+const cap = 95.5;
 
-/* Forward dataframe */
-const fdf=[
-{OFF_Rating:99,OFF_CapValue:0.21,DEF_Rating:99,DEF_CapValue:0.2},{OFF_Rating:98,OFF_CapValue:0.2,DEF_Rating:98,DEF_CapValue:0.2},
-{OFF_Rating:97,OFF_CapValue:0.19,DEF_Rating:97,DEF_CapValue:0.2},{OFF_Rating:96,OFF_CapValue:0.18,DEF_Rating:96,DEF_CapValue:0.2},
-{OFF_Rating:95,OFF_CapValue:0.17,DEF_Rating:95,DEF_CapValue:0.2},{OFF_Rating:94,OFF_CapValue:0.16,DEF_Rating:94,DEF_CapValue:0.2},
-{OFF_Rating:93,OFF_CapValue:0.15,DEF_Rating:93,DEF_CapValue:0.19},{OFF_Rating:92,OFF_CapValue:0.145,DEF_Rating:92,DEF_CapValue:0.175},
-{OFF_Rating:91,OFF_CapValue:0.14,DEF_Rating:91,DEF_CapValue:0.16},{OFF_Rating:90,OFF_CapValue:0.135,DEF_Rating:90,DEF_CapValue:0.145},
-{OFF_Rating:89,OFF_CapValue:0.12,DEF_Rating:89,DEF_CapValue:0.13},{OFF_Rating:88,OFF_CapValue:0.105,DEF_Rating:88,DEF_CapValue:0.115},
-{OFF_Rating:87,OFF_CapValue:0.09,DEF_Rating:87,DEF_CapValue:0.1},{OFF_Rating:86,OFF_CapValue:0.08,DEF_Rating:86,DEF_CapValue:0.085},
-{OFF_Rating:85,OFF_CapValue:0.07,DEF_Rating:85,DEF_CapValue:0.07},{OFF_Rating:84,OFF_CapValue:0.06,DEF_Rating:84,DEF_CapValue:0.055},
-{OFF_Rating:83,OFF_CapValue:0.04,DEF_Rating:83,DEF_CapValue:0.04},{OFF_Rating:82,OFF_CapValue:0.032,DEF_Rating:82,DEF_CapValue:0.028},
-{OFF_Rating:81,OFF_CapValue:0.024,DEF_Rating:81,DEF_CapValue:0.018},{OFF_Rating:80,OFF_CapValue:0.016,DEF_Rating:80,DEF_CapValue:0.014},
-{OFF_Rating:79,OFF_CapValue:0.013,DEF_Rating:79,DEF_CapValue:0.012},{OFF_Rating:78,OFF_CapValue:0.012,DEF_Rating:78,DEF_CapValue:0.011},
-{OFF_Rating:77,OFF_CapValue:0.011,DEF_Rating:77,DEF_CapValue:0.01},{OFF_Rating:76,OFF_CapValue:0.01,DEF_Rating:76,DEF_CapValue:0.009}
-];
-const foaDf=[
-{OA_Rating:99,OA_CapValue:0.109947644},{OA_Rating:98,OA_CapValue:0.109947644},{OA_Rating:97,OA_CapValue:0.109947644},{OA_Rating:96,OA_CapValue:0.109947644},
-{OA_Rating:95,OA_CapValue:0.109947644},{OA_Rating:94,OA_CapValue:0.109947644},{OA_Rating:93,OA_CapValue:0.109947644},{OA_Rating:92,OA_CapValue:0.09947643979},
-{OA_Rating:91,OA_CapValue:0.09947643979},{OA_Rating:90,OA_CapValue:0.0890052356},{OA_Rating:89,OA_CapValue:0.0890052356},{OA_Rating:88,OA_CapValue:0.07853403141},
-{OA_Rating:87,OA_CapValue:0.06806282723},{OA_Rating:86,OA_CapValue:0.05759162304},{OA_Rating:85,OA_CapValue:0.04712041885},{OA_Rating:84,OA_CapValue:0.03664921466},
-{OA_Rating:83,OA_CapValue:0.02617801047},{OA_Rating:82,OA_CapValue:0.02094240838},{OA_Rating:81,OA_CapValue:0.01570680628},{OA_Rating:80,OA_CapValue:0.01}
-];
-
-/* Defense dataframe */
-const ddf=[
-{OFF_Rating:99,OFF_CapValue:0.2,DEF_Rating:99,DEF_CapValue:0.2,OA_Rating:99,OA_Value:9.5,OA_CapValue:0.2},
-{OFF_Rating:98,OFF_CapValue:0.2,DEF_Rating:98,DEF_CapValue:0.2,OA_Rating:98,OA_Value:9,OA_CapValue:0.2},
-{OFF_Rating:97,OFF_CapValue:0.2,DEF_Rating:97,DEF_CapValue:0.2,OA_Rating:97,OA_Value:8.5,OA_CapValue:0.18},
-{OFF_Rating:96,OFF_CapValue:0.185,DEF_Rating:96,DEF_CapValue:0.2,OA_Rating:96,OA_Value:8,OA_CapValue:0.16},
-{OFF_Rating:95,OFF_CapValue:0.17,DEF_Rating:95,DEF_CapValue:0.2,OA_Rating:95,OA_Value:7.5,OA_CapValue:0.14},
-{OFF_Rating:94,OFF_CapValue:0.15,DEF_Rating:94,DEF_CapValue:0.2,OA_Rating:94,OA_Value:7,OA_CapValue:0.12},
-{OFF_Rating:93,OFF_CapValue:0.13,DEF_Rating:93,DEF_CapValue:0.2,OA_Rating:93,OA_Value:6.5,OA_CapValue:0.1},
-{OFF_Rating:92,OFF_CapValue:0.11,DEF_Rating:92,DEF_CapValue:0.2,OA_Rating:92,OA_Value:6,OA_CapValue:0.09},
-{OFF_Rating:91,OFF_CapValue:0.1,DEF_Rating:91,DEF_CapValue:0.2,OA_Rating:91,OA_Value:5.5,OA_CapValue:0.08},
-{OFF_Rating:90,OFF_CapValue:0.09,DEF_Rating:90,DEF_CapValue:0.2,OA_Rating:90,OA_Value:5,OA_CapValue:0.07}
+/* ===============================
+   FORWARD DATAFRAME
+================================ */
+const fdata=[
+[99,0,0.21,99,0,0.2,99,0.109947644],[98,0,0.2,98,0,0.2,98,0.109947644],
+[97,0,0.19,97,0,0.2,97,0.109947644],[96,0,0.18,96,0,0.2,96,0.109947644],
+[95,0,0.17,95,0,0.2,95,0.109947644],[94,0,0.16,94,0,0.2,94,0.109947644],
+[93,0,0.15,93,0,0.19,93,0.109947644],[92,0,0.145,92,0,0.175,92,0.09947643979],
+[91,0,0.14,91,0,0.16,91,0.09947643979],[90,0,0.135,90,0,0.145,90,0.0890052356],
+[89,0,0.12,89,0,0.13,89,0.0890052356],[88,0,0.105,88,0,0.115,88,0.07853403141],
+[87,0.09,0.09,87,0,0.1,87,0.06806282723],[86,0,0.08,0.08,86,0,0.085,86,0.05759162304],
+[85,0,0.07,85,0,0.07,85,0.04712041885],[84,0,0.06,0.06,84,0,0.055,84,0.03664921466],
+[83,0,0.04,83,0,0.04,83,0.02617801047],[82,0,0.032,82,0,0.028,82,0.02094240838],
+[81,0,0.024,81,0,0.018,81,0.01570680628],[80,0,0.016,80,0,0.014,80,0.01],
+[79,0,0.013,79,0,0.012,79,0.008],[78,0.012,0.012,78,0,0.011,78,0.006],
+[77,0.011,0.011,77,0,0.01,77,0.004],[76,0.01,0.01,76,0,0.009,76,0.002],
+[75,0.0085,0.0085,75,0,0.005454545455,75,0],[74,0.0085,0.0085,74,0,0.005454545455,74,-0.001047120419],
+[73,0.0085,0.0085,73,0,0.005454545455,73,-0.002094240838],[72,0.0085,0.0085,72,0,0.005454545455,72,-0.003141361257],
+[71,0.0085,0.0085,71,0,0.005454545455,71,-0.004188481675],[70,0.0085,0.0085,70,0,0.005454545455,70,-0.005235602094]
 ];
 
-/* PARSER */
+/* ===============================
+   DEFENSE DATAFRAME
+================================ */
+const ddata=[
+[99,0,0.2,99,0,0.2,99,9.5,0.2],[98,0,0.2,98,0,0.2,98,9,0.2],[97,0,0.2,97,0,0.2,97,8.5,0.18],
+[96,0,0.185,96,0,0.2,96,8,0.16],[95,0,0.17,95,0,0.2,95,7.5,0.14],[94,0,0.15,94,0,0.2,94,7,0.12],
+[93,0,0.13,93,0,0.2,93,6.5,0.1],[92,0,0.11,92,0,0.2,92,6,0.09],[91,0,0.1,91,0,0.2,91,5.5,0.08],[90,0,0.09,90,0,0.2,90,5,0.07]
+];
+
+/* ===============================
+   PARSER
+================================ */
 function parse(info){
     const parts=info.trim().split(/\s+/);
-    const name=`${parts[0]} ${parts[1]}`;
+    const first_name=parts[0], last_name=parts[1];
     let age=null;
-    for(const p of parts){
-        if(/^\d+$/.test(p)){age=parseInt(p,10); break;}
-    }
+    for(const p of parts){ if(/^\d+$/.test(p)){age=parseInt(p,10); break;}}
     const nums=parts.filter(p=>/^\d+$/.test(p)).map(Number);
-    return{
-        name, age,
+    return {
+        name:first_name+" "+last_name,
+        age:age,
         off:nums[nums.length-3],
         def:nums[nums.length-2],
         oa:nums[nums.length-1],
@@ -95,93 +92,104 @@ function parse(info){
     };
 }
 
-/* Forward contract */
-function fcontractJS(playerText,elc){
-    const data=parse(playerText);
-    const {name, age, off, def:pdef, oa}=data;
+/* ===============================
+   FORWARD CONTRACT
+================================ */
+function fcontract(player, elc_input){
+    const data=parse(player);
+    let off=data.off, pdef=data.def, oa=data.oa, age=data.age;
+    const elc=elc_input;
 
-    const tw=((off>85 && pdef>80)||(off>82 && pdef>82))?1:0;
-    const twoway=pdef<80?tw*1.025:tw*1.05;
-    const scg=((off<65 && pdef>76)||(off<60 && pdef>74))?1:0;
-    const gnval=(pdef>77?0.85:0.55)*scg;
-    const elcbonus=elc?0.9:1;
-    const oneway=(off>79 && pdef<67)?0.85:1;
+    let tw=((off>85 && pdef>80)||(off>82 && pdef>82))?1:0;
+    let twoway=(pdef<80)?tw*1.025:tw*1.05;
+    let scg=((off<65 && pdef>76)||(off<60 && pdef>74))?1:0;
+    let gnval=(pdef>77?0.85:0.55)*scg;
+    let elcbonus=(elc=="True")?0.9:1;
+    let oneway=(off>79 && pdef<67)?0.85:1;
 
     let allo=1;
     if(off>92) allo=1.3;
     else if(off>86) allo=1.2;
     else if(off>82) allo=1.1;
 
-    const offVal=fdf.find(r=>r.OFF_Rating===off)?.OFF_CapValue||0;
-    const defVal=fdf.find(r=>r.DEF_Rating===pdef)?.DEF_CapValue||0;
-    const oaVal=foaDf.find(r=>r.OA_Rating===oa)?.OA_CapValue||0;
+    const offVal=fdata.find(r=>r[0]==off)[2]||0;
+    const defVal=fdata.find(r=>r[3]==pdef)[5]||0;
+    const oaVal=fdata.find(r=>r[6]==oa)[7]||0;
 
-    const sumAllo=(offVal*allo)+defVal+oaVal;
-
+    let sumAllo=(offVal*allo)+defVal+oaVal;
     let sugval;
     if(off<78 && pdef<70) sugval=0.8/82.5;
-    else if(twoway>0) sugval=gnval>0?twoway*gnval*(sumAllo/2):twoway*(sumAllo/2);
-    else sugval=gnval>0?gnval*(sumAllo/2):sumAllo/2;
+    else if(twoway>0){
+        if(gnval>0) sugval=twoway*gnval*(sumAllo/2);
+        else sugval=twoway*(sumAllo/2);
+    } else {
+        if(gnval>0) sugval=gnval*(sumAllo/2);
+        else sugval=sumAllo/2;
+    }
 
     sugval=Math.min(sugval*oneway*elcbonus,0.8);
-    let aav=Math.min(sugval*cap,x_eight*cap);
-    if(age>34) aav*=0.9;
-    return {name,age,off,pdef,oa,elc,aav};
-}
-
-/* Defense contract */
-function dcontractJS(playerText,elc){
-    const data=parse(playerText);
-    const {name, age, off, def:pdef, oa, fa}=data;
-
-    const twoway=(off>78 && pdef>79)?1:0;
-    const offensive=(off>79 && pdef<76)?1:0;
-    const defensive=(off<74 && pdef>79)?1:0;
-    const sgc=(off<68 && pdef>77 && pdef<80)?1:0;
-
-    const tw=twoway?1.2:1;
-    const plyoff=offensive?1.05:1;
-    const plydef=defensive?1.1:1;
-    const sgv=sgc?0.8:1;
-    const elcbonusVal=elc?0.9:1;
-
-    const adj_oa=Math.round(((oa*15)-fa)/14);
-
-    const offVal=ddf.find(r=>r.OFF_Rating===off)?.OFF_CapValue||0;
-    const defVal=ddf.find(r=>r.DEF_Rating===pdef)?.DEF_CapValue||0;
-    const oaVal=ddf.find(r=>r.OA_Rating===adj_oa)?.OA_CapValue||0;
-
-    const sumallo=offVal+defVal;
-    let sugval=((sumallo/2)*tw*plyoff*plydef*sgv*elcbonusVal)+oaVal;
-    let aav=Math.min(sugval*cap,x_eight*cap);
+    let aav=(sugval*cap>(x_eight*cap))?x_eight*cap:sugval*cap;
     if(age>34) aav*=0.9;
 
-    return {name,age,off,pdef,oa,fa,elc,aav};
+    return {off,pdef,oa,age,elc,aav};
 }
 
-/* MAIN BUTTON */
+/* ===============================
+   DEFENSE CONTRACT
+================================ */
+function dcontract(player, elc_input){
+    const data=parse(player);
+    let off=data.off, pdef=data.def, oa=data.oa, age=data.age, fa=data.fa;
+    const elc=elc_input;
+
+    let twoway=(off>78 && pdef>79)?1:0;
+    let offensive=(off>79 && pdef<76)?1:0;
+    let defensive=(off<74 && pdef>79)?1:0;
+    let sgc=(off<68 && pdef>77 && pdef<80)?1:0;
+    let tw=twoway?1.2:1;
+    let plyoff=offensive?1.05:1;
+    let plydef=defensive?1.1:1;
+    let sgv=sgc?0.8:1;
+    let elcbonus=(elc=="True")?0.9:1;
+
+    let adj_oa=Math.round(((oa*15)-fa)/14);
+
+    let offVal=ddata.find(r=>r[0]==off)[2]||0;
+    let defVal=ddata.find(r=>r[3]==pdef)[5]||0;
+    let oaVal=ddata.find(r=>r[6]==adj_oa)?ddata.find(r=>r[6]==adj_oa)[8]:0;
+
+    let sumallo=offVal+defVal;
+    let sugval=((sumallo/2)*tw*plyoff*plydef*sgv*elcbonus)+oaVal;
+    let aav=(sugval*cap>(x_eight*cap))?x_eight*cap:sugval*cap;
+    if(age>34) aav*=0.9;
+
+    return {off,pdef,oa,fa,age,elc,aav};
+}
+
+/* ===============================
+   MAIN BUTTON
+================================ */
 function calculateContract(){
-    const position=document.getElementById("position").value;
-    const elc=document.getElementById("elc").value==="true";
+    const pos=document.getElementById("position").value;
+    const elc=document.getElementById("elc").value;
     const rawText=document.getElementById("data").value.trim();
     if(!rawText){document.getElementById("resultText").innerText="Please paste player data.";return;}
 
-    const result=position==="forward"?fcontractJS(rawText,elc):dcontractJS(rawText,elc);
+    let result;
+    if(pos=="FWD") result=fcontract(rawText,elc);
+    else result=dcontract(rawText,elc);
 
-    document.getElementById("resultText").innerHTML=`
-        <b>Summary</b><br>
-        Player: ${result.name}<br>
-        AAV: <b>$${(result.aav*1_000_000).toLocaleString()}</b><br><br>
-        <b>Breakdown</b><br>
-        Offense: ${result.off}<br>
-        Defense: ${result.pdef}<br>
-        Overall: ${result.oa}<br>
-        ${position==="defense"?`FA: ${result.fa}<br>`:""}
-        Age: ${result.age}<br>
-        ELC: ${result.elc}<br>
-        AAV (cap %): ${result.aav.toFixed(6)}<br>
-        ${result.elc?'<i>Max contract length 2–3 years</i>':""}
-    `;
+    let output=`<b>Player:</b> ${rawText.split(" ").slice(0,2).join(" ")}<br>`;
+    output+=`<b>AAV:</b> $${(result.aav*1000000).toLocaleString()}<br><br>`;
+    output+=`<b>Offense:</b> ${result.off}<br>`;
+    output+=`<b>Defense:</b> ${result.pdef}<br>`;
+    output+=`<b>Overall:</b> ${result.oa}<br>`;
+    if(pos=="DEF") output+=`<b>FA:</b> ${result.fa}<br>`;
+    output+=`<b>Age:</b> ${result.age}<br>`;
+    output+=`<b>ELC:</b> ${result.elc}<br>`;
+    output+=`<b>AAV (cap %):</b> ${result.aav.toFixed(6)}<br>`;
+    if(result.elc=="True") output+=`<i>Max contract length 2–3 years</i>`;
+    document.getElementById("resultText").innerHTML=output;
 }
 </script>
 </body>
