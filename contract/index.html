@@ -132,6 +132,56 @@ const df = [
   { off:45, offCap:0.001212, def:45, defCap:0.001212 },
 ];
 
+const ddata = [
+  { OFF_Rating: 99, OFF_Value: 0, OFF_CapValue: 0.2, DEF_Rating: 99, DEF_Value: 0, DEF_CapValue: 0.2, OA_Rating: 99, OA_Value: 9.5, OA_CapValue: 0.2 },
+  { OFF_Rating: 98, OFF_Value: 0, OFF_CapValue: 0.2, DEF_Rating: 98, DEF_Value: 0, DEF_CapValue: 0.2, OA_Rating: 98, OA_Value: 9, OA_CapValue: 0.2 },
+  { OFF_Rating: 97, OFF_Value: 0, OFF_CapValue: 0.2, DEF_Rating: 97, DEF_Value: 0, DEF_CapValue: 0.2, OA_Rating: 97, OA_Value: 8.5, OA_CapValue: 0.18 },
+  { OFF_Rating: 96, OFF_Value: 0, OFF_CapValue: 0.185, DEF_Rating: 96, DEF_Value: 0, DEF_CapValue: 0.2, OA_Rating: 96, OA_Value: 8, OA_CapValue: 0.16 },
+  { OFF_Rating: 95, OFF_Value: 0, OFF_CapValue: 0.17, DEF_Rating: 95, DEF_Value: 0, DEF_CapValue: 0.2, OA_Rating: 95, OA_Value: 7.5, OA_CapValue: 0.14 },
+  { OFF_Rating: 94, OFF_Value: 0, OFF_CapValue: 0.15, DEF_Rating: 94, DEF_Value: 0, DEF_CapValue: 0.2, OA_Rating: 94, OA_Value: 7, OA_CapValue: 0.12 },
+  { OFF_Rating: 93, OFF_Value: 0, OFF_CapValue: 0.13, DEF_Rating: 93, DEF_Value: 0, DEF_CapValue: 0.2, OA_Rating: 93, OA_Value: 6.5, OA_CapValue: 0.1 },
+  { OFF_Rating: 92, OFF_Value: 0, OFF_CapValue: 0.11, DEF_Rating: 92, DEF_Value: 0, DEF_CapValue: 0.2, OA_Rating: 92, OA_Value: 6, OA_CapValue: 0.09 },
+  { OFF_Rating: 91, OFF_Value: 0, OFF_CapValue: 0.1, DEF_Rating: 91, DEF_Value: 0, DEF_CapValue: 0.2, OA_Rating: 91, OA_Value: 5.5, OA_CapValue: 0.08 },
+  { OFF_Rating: 90, OFF_Value: 0, OFF_CapValue: 0.09, DEF_Rating: 90, DEF_Value: 0, DEF_CapValue: 0.2, OA_Rating: 90, OA_Value: 5, OA_CapValue: 0.07 },
+  { OFF_Rating: 89, OFF_Value: 0, OFF_CapValue: 0.08, DEF_Rating: 89, DEF_Value: 0, DEF_CapValue: 0.19, OA_Rating: 89, OA_Value: 4.5, OA_CapValue: 0.06 },
+  { OFF_Rating: 88, OFF_Value: 0, OFF_CapValue: 0.07, DEF_Rating: 88, DEF_Value: 0, DEF_CapValue: 0.18, OA_Rating: 88, OA_Value: 4, OA_CapValue: 0.05 },
+  { OFF_Rating: 87, OFF_Value: 0, OFF_CapValue: 0.06, DEF_Rating: 87, DEF_Value: 0, DEF_CapValue: 0.15, OA_Rating: 87, OA_Value: 3, OA_CapValue: 0.04 },
+  { OFF_Rating: 86, OFF_Value: 0, OFF_CapValue: 0.05, DEF_Rating: 86, DEF_Value: 0, DEF_CapValue: 0.125, OA_Rating: 86, OA_Value: 2.5, OA_CapValue: 0.03 },
+  { OFF_Rating: 85, OFF_Value: 0, OFF_CapValue: 0.04, DEF_Rating: 85, DEF_Value: 0, DEF_CapValue: 0.1, OA_Rating: 85, OA_Value: 2, OA_CapValue: 0.02 },
+  { OFF_Rating: 84, OFF_Value: 0, OFF_CapValue: 0.035, DEF_Rating: 84, DEF_Value: 0, DEF_CapValue: 0.075, OA_Rating: 84, OA_Value: 1.75, OA_CapValue: 0.015 },
+  { OFF_Rating: 83, OFF_Value: 0, OFF_CapValue: 0.03, DEF_Rating: 83, DEF_Value: 0, DEF_CapValue: 0.05, OA_Rating: 83, OA_Value: 1.5, OA_CapValue: 0.01 },
+  { OFF_Rating: 82, OFF_Value: 0, OFF_CapValue: 0.025, DEF_Rating: 82, DEF_Value: 0, DEF_CapValue: 0.025, OA_Rating: 82, OA_Value: 1.25, OA_CapValue: 0.008 },
+  { OFF_Rating: 81, OFF_Value: 0, OFF_CapValue: 0.02, DEF_Rating: 81, DEF_Value: 0, DEF_CapValue: 0.02, OA_Rating: 81, OA_Value: 1, OA_CapValue: 0.006 },
+  { OFF_Rating: 80, OFF_Value: 0, OFF_CapValue: 0.015, DEF_Rating: 80, DEF_Value: 0, DEF_CapValue: 0.015, OA_Rating: 80, OA_Value: 0.75, OA_CapValue: 0.004 },
+  { OFF_Rating: 79, OFF_Value: 0, OFF_CapValue: 0.01, DEF_Rating: 79, DEF_Value: 0, DEF_CapValue: 0.01, OA_Rating: 79, OA_Value: 0.6, OA_CapValue: 0.002 },
+  { OFF_Rating: 78, OFF_Value: 0, OFF_CapValue: 0.0085, DEF_Rating: 78, DEF_Value: 0, DEF_CapValue: 0.0085, OA_Rating: 78, OA_Value: 0.45, OA_CapValue: 0 },
+  { OFF_Rating: 77, OFF_Value: 0, OFF_CapValue: 0.0068, DEF_Rating: 77, DEF_Value: 0, DEF_CapValue: 0.0068, OA_Rating: 77, OA_Value: 0.3, OA_CapValue: 0 },
+  { OFF_Rating: 76, OFF_Value: 0, OFF_CapValue: 0.006, DEF_Rating: 76, DEF_Value: 0, DEF_CapValue: 0.006, OA_Rating: 76, OA_Value: 0.15, OA_CapValue: 0 },
+  { OFF_Rating: 75, OFF_Value: 0, OFF_CapValue: 0.0037, DEF_Rating: 75, DEF_Value: 0, DEF_CapValue: 0.0037, OA_Rating: 75, OA_Value: 0, OA_CapValue: 0 },
+  { OFF_Rating: 74, OFF_Value: 0, OFF_CapValue: 0.0037, DEF_Rating: 74, DEF_Value: 0, DEF_CapValue: 0.0037, OA_Rating: 74, OA_Value: -0.1, OA_CapValue: -0.001212121212 },
+  { OFF_Rating: 73, OFF_Value: 0, OFF_CapValue: 0.0037, DEF_Rating: 73, DEF_Value: 0, DEF_CapValue: 0.0037, OA_Rating: 73, OA_Value: -0.2, OA_CapValue: -0.002424242424 },
+  { OFF_Rating: 72, OFF_Value: 0, OFF_CapValue: 0.0037, DEF_Rating: 72, DEF_Value: 0, DEF_CapValue: 0.0037, OA_Rating: 72, OA_Value: -0.3, OA_CapValue: -0.003636363636 },
+  { OFF_Rating: 71, OFF_Value: 0, OFF_CapValue: 0.0037, DEF_Rating: 71, DEF_Value: 0, DEF_CapValue: 0.0037, OA_Rating: 71, OA_Value: -0.4, OA_CapValue: -0.004848484848 },
+  { OFF_Rating: 70, OFF_Value: 0, OFF_CapValue: 0.0037, DEF_Rating: 70, DEF_Value: 0, DEF_CapValue: 0.0037, OA_Rating: 70, OA_Value: -0.5, OA_CapValue: -0.006060606061 },
+  { OFF_Rating: 69, OFF_Value: 0, OFF_CapValue: 0.0037, DEF_Rating: 69, DEF_Value: 0, DEF_CapValue: 0.0037, OA_Rating: 69, OA_Value: -0.5, OA_CapValue: -0.006060606061 },
+  { OFF_Rating: 68, OFF_Value: 0, OFF_CapValue: 0.003636363636, DEF_Rating: 68, DEF_Value: 0, DEF_CapValue: 0.003636363636, OA_Rating: 68, OA_Value: -0.5, OA_CapValue: -0.006060606061 },
+  { OFF_Rating: 67, OFF_Value: 0, OFF_CapValue: 0.003636363636, DEF_Rating: 67, DEF_Value: 0, DEF_CapValue: 0.003636363636, OA_Rating: 67, OA_Value: -0.5, OA_CapValue: -0.006060606061 },
+  { OFF_Rating: 66, OFF_Value: 0, OFF_CapValue: 0.003636363636, DEF_Rating: 66, DEF_Value: 0, DEF_CapValue: 0.003636363636, OA_Rating: 66, OA_Value: -0.5, OA_CapValue: -0.006060606061 },
+  { OFF_Rating: 65, OFF_Value: 0, OFF_CapValue: 0.003636363636, DEF_Rating: 65, DEF_Value: 0, DEF_CapValue: 0.003636363636, OA_Rating: 65, OA_Value: -0.5, OA_CapValue: -0.006060606061 },
+  { OFF_Rating: 64, OFF_Value: 0, OFF_CapValue: 0.002424242424, DEF_Rating: 64, DEF_Value: 0, DEF_CapValue: 0.002424242424, OA_Rating: 64, OA_Value: -0.5, OA_CapValue: -0.006060606061 },
+  { OFF_Rating: 63, OFF_Value: 0, OFF_CapValue: 0.002424242424, DEF_Rating: 63, DEF_Value: 0, DEF_CapValue: 0.002424242424, OA_Rating: 63, OA_Value: -0.5, OA_CapValue: -0.006060606061 },
+  { OFF_Rating: 62, OFF_Value: 0, OFF_CapValue: 0.002424242424, DEF_Rating: 62, DEF_Value: 0, DEF_CapValue: 0.002424242424, OA_Rating: 62, OA_Value: -0.5, OA_CapValue: -0.006060606061 },
+  { OFF_Rating: 61, OFF_Value: 0, OFF_CapValue: 0.002424242424, DEF_Rating: 61, DEF_Value: 0, DEF_CapValue: 0.002424242424, OA_Rating: 61, OA_Value: -0.5, OA_CapValue: -0.006060606061 },
+  { OFF_Rating: 60, OFF_Value: 0, OFF_CapValue: 0.001212121212, DEF_Rating: 60, DEF_Value: 0, DEF_CapValue: 0.001212121212, OA_Rating: 60, OA_Value: -0.5, OA_CapValue: -0.006060606061 },
+  { OFF_Rating: 59, OFF_Value: 0, OFF_CapValue: 0.001212121212, DEF_Rating: 59, DEF_Value: 0, DEF_CapValue: 0.001212121212, OA_Rating: 59, OA_Value: -0.5, OA_CapValue: -0.006060606061 },
+  { OFF_Rating: 58, OFF_Value: 0, OFF_CapValue: 0.001212121212, DEF_Rating: 58, DEF_Value: 0, DEF_CapValue: 0.001212121212, OA_Rating: 58, OA_Value: -0.5, OA_CapValue: -0.006060606061 },
+  { OFF_Rating: 57, OFF_Value: 0, OFF_CapValue: 0.001212121212, DEF_Rating: 57, DEF_Value: 0, DEF_CapValue: 0.001212121212, OA_Rating: 57, OA_Value: -0.5, OA_CapValue: -0.006060606061 },
+  { OFF_Rating: 56, OFF_Value: 0, OFF_CapValue: 0.001212121212, DEF_Rating: 56, DEF_Value: 0, DEF_CapValue: 0.001212121212, OA_Rating: 56, OA_Value: -0.5, OA_CapValue: -0.006060606061 },
+  { OFF_Rating: 55, OFF_Value: 0, OFF_CapValue: 0.001212121212, DEF_Rating: 55, DEF_Value: 0, DEF_CapValue: 0.001212121212, OA_Rating: 55, OA_Value: -0.5, OA_CapValue: -0.006060606061 },
+];
+
+
+
 /* OA Table */
 const oaDf = [
   { oa:99, oaCap:0.2 }, { oa:98, oaCap:0.2 }, { oa:97, oaCap:0.18 },
@@ -199,9 +249,9 @@ function dcontractJS(playerText, elc_input) {
 
     const adj_oa = Math.round(((oa * 15) - fa) / 14);
 
-    const offVal = df.find(r => r.off === off)?.offCap || 0;
-    const defVal = df.find(r => r.def === pdef)?.defCap || 0;
-    const oaVal  = oaDf.find(r => r.oa === adj_oa)?.oaCap || 0;
+    const offVal = ddf.find(r => r.OFF_Rating === off)?.OFF_CapValue || 0;
+    const defVal = ddf.find(r => r.DEF_Rating === pdef)?.DEF_CapValue || 0;
+    const oaVal  = ddf.find(r => r.OA_Rating === adj_oa)?.OA_CapValue || 0;
 
     const sumallo = offVal + defVal;
     let sugval = ((sumallo / 2) * tw * plyoff * plydef * sgv * elcbonus) + oaVal;
