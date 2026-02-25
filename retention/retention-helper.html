@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Retention Helper</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 0 20px;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        label {
+            display: block;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+        select, input, textarea, button {
+            width: 100%;
+            margin-top: 8px;
+            padding: 8px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        textarea {
+            resize: vertical;
+            font-family: monospace;
+            font-size: 13px;
+        }
+        button {
+            margin-top: 30px;
+            cursor: pointer;
+            background-color: #2c7be5;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 12px;
+        }
+        button:hover {
+            background-color: #1a5fba;
+        }
+        #output {
+            margin-top: 30px;
+            padding: 15px;
+            border: 1px solid #ccc;
+            background-color: #f9f9f9;
+            border-radius: 4px;
+        }
+        #resultText {
+            margin-top: 10px;
+            font-family: monospace;
+            font-size: 15px;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+        .error {
+            color: red;
+            font-weight: bold;
+        }
+        .parsed-preview {
+            margin-top: 6px;
+            font-size: 13px;
+            color: #555;
+            font-style: italic;
+        }
+        .copy-btn {
+            margin-top: 10px;
+            background-color: #28a745;
+            font-size: 14px;
+            padding: 8px;
+            width: auto;
+        }
+        .copy-btn:hover {
+            background-color: #1e7e34;
+        }
+        .row {
+            display: flex;
+            gap: 20px;
+        }
+        .row > div {
+            flex: 1;
+        }
+    </style>
+</head>
+<body>
+    <h1>🏒 Retention Helper</h1>
+
+    <!-- Current Season -->
+    <label for="currentSeason">Current Season Year</label>
+    <input type="number" id="currentSeason" placeholder="e.g. 2028" min="2000" max="2100">
+
+    <!-- Retention Type -->
+    <label for="retentionType">Retention Input Type</label>
+    <select id="retentionType" onchange="updateAmountLabel()">
+        <option value="percent">Percent (%)</option>
+        <option value="dollar">Dollar Amount ($)</option>
+    </select>
+
+    <!-- Retention Amount -->
+    <label for="retentionAmount" id="amountLabel">Retention Amount (%)</label>
+    <input type="number" id="retentionAmount" placeholder="e.g. 50" min="0">
+
+    <!-- Years -->
+    <label for="years">Number of Years Retained</label>
+    <input type="number" id="years" min="1" max="10" placeholder="e.g. 3">
+
+    <!-- Existing Retentions -->
+    <label for="existingRetentions">Team 1's Current Number of Existing Retentions (before this one)</label>
+    <input type="number" id="existingRetentions" min="0" max="2" placeholder="e.g. 1">
+
+    <!-- Player 1 -->
+    <label for="player1">Player 1 Data (being traded, retaining salary)</label>
+    <textarea id="player1" rows="3" placeholder="Paste Player 1 data here..." oninput="previewPlayer('player1', 'preview1')"></textarea>
+    <div id="preview1" class="parsed-preview"></div>
+
+    <!-- Player 2 -->
+    <label for="player2">Player 2 Data (receiving the retained salary)</label>
+    <textarea id="player2" rows="3" placeholder="Paste Player 2 data here..." oninput="previewPlayer('player2', 'preview2')"></textarea>
+    <div id="preview2" class="parsed-preview"></div>
+
+    <!-- Button -->
+    <button onclick="calculateRetention()">Generate Retention Post</button>
+
+    <!-- Output -->
+    <div id="output">
+        <strong>Result:</strong>
+        <div id="resultText">No calculation yet.</div>
+        <button class="copy-btn" id="copyBtn" onclick="copyResult()" style="display:none;">📋 Copy to Clipboard</button>
+    </div>
+
+    <script>
+        function updateAmountLabel() {
+            const type = document.getElementById("retentionType").value;
+            document.getElementById("amountLabel").innerText =
+                type === "percent" ? "Retention Amount (%)" : "Retention Amount ($)";
+            document.getElementById("retentionAmount").placeholder =
+                type === "percent" ? "e.g. 50" : "e.g. 4529500";
+        }
+
+        // Parse player data line:
+        // Format: FirstName LastName TEAM POS AGE SALARY YEARS ...stats...
+        // Example: Alex Lyon TB G/- 34 850000 1   45 80 80 ...
+        function parsePlayer(raw) {
+            const parts = raw.trim().split(/\s+/);
+            if (parts.length < 7) return null;
+
+            // Team is the first 2-4 letter all-uppercase token that comes after the first two words
+            // Salary is the first number > 100000
+            // Contract years is the number right after salary
+            const firstName = parts[0];
+            const lastName = parts[1];
+            const team = parts[2];        // 3-letter team code
+            // parts[3] = position (e.g. D/-, RW/C, G/-)
+            // parts[4] = age
+            const salary = parseInt(parts[5]);
+            const contractYears = parseInt(parts[6]);
+
+            if (!firstName || !lastName || !team || isNaN(salary) || isNaN(contractYears)) return null;
+
+            return {
+                name: `${firstName} ${lastName}`,
+                lastName: lastName,
+                team: team.toLowerCase(),
+                teamDisplay: team.toUpperCase(),
+                salary: salary,
+                contractYears: contractYears
+            };
+        }
+
+        function previewPlayer(inputId, previewId) {
+            const raw = document.getElementById(inputId).value.trim();
+            const preview = document.getElementById(previewId);
+            if (!raw) { preview.innerText = ""; return; }
+            const p = parsePlayer(raw);
+            if (p) {
+                preview.innerText = `✅ ${p.name} | ${p.teamDisplay} | $${formatMoney(p.salary)} | ${p.contractYears} yr(s)`;
+            } else {
+                preview.innerText = "⚠️ Could not parse player data — check format.";
+            }
+        }
+
+        function formatMoney(n) {
+            return n.toLocaleString("en-US");
+        }
+
+        function calculateRetention() {
+            const resultDiv = document.getElementById("resultText");
+            const copyBtn = document.getElementById("copyBtn");
+            copyBtn.style.display = "none";
+
+            const type = document.getElementById("retentionType").value;
+            const years = parseInt(document.getElementById("years").value);
+            const amountRaw = parseFloat(document.getElementById("retentionAmount").value);
+            const existing = parseInt(document.getElementById("existingRetentions").value) || 0;
+            const currentSeason = parseInt(document.getElementById("currentSeason").value);
+            const player1Raw = document.getElementById("player1").value.trim();
+            const player2Raw = document.getElementById("player2").value.trim();
+
+            // Validation
+            if (!currentSeason || isNaN(currentSeason)) {
+                resultDiv.innerHTML = '<span class="error">Please enter the current season year.</span>';
+                return;
+            }
+            if (!years || isNaN(years) || years < 1) {
+                resultDiv.innerHTML = '<span class="error">Please enter a valid number of years.</span>';
+                return;
+            }
+            if (!amountRaw || isNaN(amountRaw) || amountRaw <= 0) {
+                resultDiv.innerHTML = '<span class="error">Please enter a valid retention amount.</span>';
+                return;
+            }
+            if (!player1Raw || !player2Raw) {
+                resultDiv.innerHTML = '<span class="error">Please paste both player data fields.</span>';
+                return;
+            }
+
+            const p1 = parsePlayer(player1Raw);
+            const p2 = parsePlayer(player2Raw);
+
+            if (!p1) {
+                resultDiv.innerHTML = '<span class="error">Could not parse Player 1 data. Check the format.</span>';
+                return;
+            }
+            if (!p2) {
+                resultDiv.innerHTML = '<span class="error">Could not parse Player 2 data. Check the format.</span>';
+                return;
+            }
+
+            // Calculate retained amount
+            let retainedAmount;
+            let retainedPercent;
+
+            if (type === "percent") {
+                retainedPercent = amountRaw;
+                retainedAmount = Math.round(p1.salary * (amountRaw / 100));
+            } else {
+                retainedAmount = Math.round(amountRaw);
+                retainedPercent = Math.round((amountRaw / p1.salary) * 100);
+            }
+
+            const newSalary = p2.salary + retainedAmount;
+            const expiryYear = currentSeason + years;
+            const newRetentionCount = existing + 1;
+
+            // Build the Discord post
+            const post =
+                `:${p1.team}: -> :${p2.team}: ${p1.lastName} ${retainedPercent}% ${years} year${years !== 1 ? "s" : ""} (:${p1.team}: ${newRetentionCount}/3) salary applied to ${p2.lastName} ${formatMoney(p2.salary)} -> ${formatMoney(newSalary)} (expires ${expiryYear})`;
+
+            resultDiv.innerText = post;
+            copyBtn.style.display = "block";
+        }
+
+        function copyResult() {
+            const text = document.getElementById("resultText").innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                const btn = document.getElementById("copyBtn");
+                btn.innerText = "✅ Copied!";
+                setTimeout(() => { btn.innerText = "📋 Copy to Clipboard"; }, 2000);
+            });
+        }
+    </script>
+</body>
+</html>
