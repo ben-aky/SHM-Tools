@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Retention Helper</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 0 20px;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        label {
+            display: block;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+        select, input, textarea, button {
+            width: 100%;
+            margin-top: 8px;
+            padding: 8px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        textarea {
+            resize: vertical;
+            font-family: monospace;
+            font-size: 13px;
+        }
+        button {
+            margin-top: 30px;
+            cursor: pointer;
+            background-color: #2c7be5;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 12px;
+        }
+        button:hover {
+            background-color: #1a5fba;
+        }
+        #output {
+            margin-top: 30px;
+            padding: 15px;
+            border: 1px solid #ccc;
+            background-color: #f9f9f9;
+            border-radius: 4px;
+        }
+        #resultText {
+            margin-top: 10px;
+            font-family: monospace;
+            font-size: 15px;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+        .error {
+            color: red;
+            font-weight: bold;
+        }
+        .parsed-preview {
+            margin-top: 6px;
+            font-size: 13px;
+            color: #555;
+            font-style: italic;
+        }
+        .copy-btn {
+            margin-top: 10px;
+            background-color: #28a745;
+            font-size: 14px;
+            padding: 8px;
+            width: auto;
+        }
+        .copy-btn:hover {
+            background-color: #1e7e34;
+        }
+        .row {
+            display: flex;
+            gap: 20px;
+        }
+        .row > div {
+            flex: 1;
+        }
+        .hint {
+            font-size: 12px;
+            color: #777;
+            font-weight: normal;
+        }
+    </style>
+</head>
+<body>
+    <h1>🏒 Retention Helper</h1>
+
+    <!-- Current Season -->
+    <label for="currentSeason">Current Season Year</label>
+    <input type="number" id="currentSeason" placeholder="e.g. 2028" min="2000" max="2100">
+
+    <!-- Teams -->
+    <div class="row" style="margin-top:20px;">
+        <div>
+            <label for="team1Code">Team 1 — Retaining Team
+                <span class="hint">(keeping part of the salary)</span>
+            </label>
+            <input type="text" id="team1Code" placeholder="e.g. cgy" maxlength="10" oninput="this.value = this.value.toLowerCase()">
+        </div>
+        <div>
+            <label for="team2Code">Team 2 — Receiving Team
+                <span class="hint">(acquiring the player)</span>
+            </label>
+            <input type="text" id="team2Code" placeholder="e.g. tb" maxlength="10" oninput="this.value = this.value.toLowerCase()">
+        </div>
+    </div>
+
+    <!-- Retention Type -->
+    <label for="retentionType">Retention Input Type</label>
+    <select id="retentionType" onchange="updateAmountLabel()">
+        <option value="percent">Percent (%)</option>
+        <option value="dollar">Dollar Amount ($)</option>
+    </select>
+
+    <!-- Retention Amount -->
+    <label for="retentionAmount" id="amountLabel">Retention Amount (%)</label>
+    <input type="number" id="retentionAmount" placeholder="e.g. 50" min="0">
+
+    <!-- Years -->
+    <label for="years">Number of Years Retained</label>
+    <input type="number" id="years" min="1" max="10" placeholder="e.g. 3">
+
+    <!-- Existing Retentions -->
+    <label for="existingRetentions">Team 1's Existing Retentions (before this one)</label>
+    <input type="number" id="existingRetentions" min="0" max="2" value="0" placeholder="e.g. 1">
+
+    <!-- Player 1 — player being traded, whose salary is being retained -->
+    <label for="player1">Player 1 — Being traded away (salary being retained)
+        <span class="hint">Name &amp; salary are parsed from this</span>
+    </label>
+    <textarea id="player1" rows="3" placeholder="Paste Player 1 data here..." oninput="previewPlayer('player1', 'preview1')"></textarea>
+    <div id="preview1" class="parsed-preview"></div>
+
+    <!-- Player 2 — player on Team 1 who absorbs the retained cap hit -->
+    <label for="player2">Player 2 — On Team 1, absorbing the retained salary
+        <span class="hint">Name &amp; current salary are parsed from this</span>
+    </label>
+    <textarea id="player2" rows="3" placeholder="Paste Player 2 data here..." oninput="previewPlayer('player2', 'preview2')"></textarea>
+    <div id="preview2" class="parsed-preview"></div>
+
+    <!-- Button -->
+    <button onclick="calculateRetention()">Generate Retention Post</button>
+
+    <!-- Output -->
+    <div id="output">
+        <strong>Result:</strong>
+        <div id="resultText">No calculation yet.</div>
+        <button class="copy-btn" id="copyBtn" onclick="copyResult()" style="display:none;">📋 Copy to Clipboard</button>
+    </div>
+
+    <script>
+        function updateAmountLabel() {
+            const type = document.getElementById("retentionType").value;
+            document.getElementById("amountLabel").innerText =
+                type === "percent" ? "Retention Amount (%)" : "Retention Amount ($)";
+            document.getElementById("retentionAmount").placeholder =
+                type === "percent" ? "e.g. 50" : "e.g. 4529500";
+        }
+
+        // Parse player data line:
+        // Format: FirstName LastName TEAM POS AGE SALARY YEARS ...stats...
+        // Example: Alex Lyon TB G/- 34 850000 1   45 80 80 ...
+        function parsePlayer(raw) {
+            const parts = raw.trim().split(/\s+/);
+            if (parts.length < 7) return null;
+
+            const firstName = parts[0];
+            const lastName = parts[1];
+            // parts[2] = team (ignored — we use the manual team inputs)
+            // parts[3] = position
+            // parts[4] = age
+            const salary = parseInt(parts[5]);
+            const contractYears = parseInt(parts[6]);
+
+            if (!firstName || !lastName || isNaN(salary) || isNaN(contractYears)) return null;
+
+            return {
+                name: `${firstName} ${lastName}`,
+                lastName: lastName,
+                salary: salary,
+                contractYears: contractYears
+            };
+        }
+
+        function formatMoney(n) {
+            return n.toLocaleString("en-US");
+        }
+
+        function previewPlayer(inputId, previewId) {
+            const raw = document.getElementById(inputId).value.trim();
+            const preview = document.getElementById(previewId);
+            if (!raw) { preview.innerText = ""; return; }
+            const p = parsePlayer(raw);
+            if (p) {
+                preview.innerText = `✅ ${p.name} | $${formatMoney(p.salary)} | ${p.contractYears} yr(s)`;
+            } else {
+                preview.innerText = "⚠️ Could not parse — check format.";
+            }
+        }
+
+        function calculateRetention() {
+            const resultDiv = document.getElementById("resultText");
+            const copyBtn = document.getElementById("copyBtn");
+            copyBtn.style.display = "none";
+
+            const type = document.getElementById("retentionType").value;
+            const years = parseInt(document.getElementById("years").value);
+            const amountRaw = parseFloat(document.getElementById("retentionAmount").value);
+            const existing = parseInt(document.getElementById("existingRetentions").value) || 0;
+            const currentSeason = parseInt(document.getElementById("currentSeason").value);
+            const team1 = document.getElementById("team1Code").value.trim().toLowerCase();
+            const team2 = document.getElementById("team2Code").value.trim().toLowerCase();
+            const player1Raw = document.getElementById("player1").value.trim();
+            const player2Raw = document.getElementById("player2").value.trim();
+
+            // Validation
+            if (!currentSeason || isNaN(currentSeason)) {
+                resultDiv.innerHTML = '<span class="error">Please enter the current season year.</span>'; return;
+            }
+            if (!team1 || !team2) {
+                resultDiv.innerHTML = '<span class="error">Please enter both team codes.</span>'; return;
+            }
+            if (!years || isNaN(years) || years < 1) {
+                resultDiv.innerHTML = '<span class="error">Please enter a valid number of years.</span>'; return;
+            }
+            if (!amountRaw || isNaN(amountRaw) || amountRaw <= 0) {
+                resultDiv.innerHTML = '<span class="error">Please enter a valid retention amount.</span>'; return;
+            }
+            if (!player1Raw || !player2Raw) {
+                resultDiv.innerHTML = '<span class="error">Please paste both player data fields.</span>'; return;
+            }
+
+            const p1 = parsePlayer(player1Raw);
+            const p2 = parsePlayer(player2Raw);
+
+            if (!p1) {
+                resultDiv.innerHTML = '<span class="error">Could not parse Player 1 data. Check the format.</span>'; return;
+            }
+            if (!p2) {
+                resultDiv.innerHTML = '<span class="error">Could not parse Player 2 data. Check the format.</span>'; return;
+            }
+
+            // Calculate retained amount and percentage
+            let retainedAmount, retainedPercent;
+            if (type === "percent") {
+                retainedPercent = amountRaw;
+                retainedAmount = Math.round(p1.salary * (amountRaw / 100));
+            } else {
+                retainedAmount = Math.round(amountRaw);
+                retainedPercent = Math.round((amountRaw / p1.salary) * 100);
+            }
+
+            const newSalary = p2.salary + retainedAmount;
+            const expiryYear = currentSeason + years;
+            const newRetentionCount = existing + 1;
+
+            const t1 = team1.toUpperCase();
+            const t2 = team2.toUpperCase();
+            const p1NewSalary = p1.salary - retainedAmount;
+
+            // Build the Discord post
+            const post =
+                `:${t1}: -> :${t2}: ${p1.lastName} ${retainedPercent}% ${years} year${years !== 1 ? "s" : ""} ( :${t1}: ${newRetentionCount}/3) salary applied to ${p2.lastName} ${formatMoney(p2.salary)} -> ${formatMoney(newSalary)} (expires ${expiryYear})`;
+
+            const breakdown =
+                `\n${p1.lastName}'s new salary: ${formatMoney(p1NewSalary)}`;
+
+            resultDiv.innerText = post + "\n" + breakdown;
+            copyBtn.style.display = "block";
+        }
+
+        function copyResult() {
+            const text = document.getElementById("resultText").innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                const btn = document.getElementById("copyBtn");
+                btn.innerText = "✅ Copied!";
+                setTimeout(() => { btn.innerText = "📋 Copy to Clipboard"; }, 2000);
+            });
+        }
+    </script>
+</body>
+</html>
